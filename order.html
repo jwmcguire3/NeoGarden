@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
  <head>
+  <meta content="Neogarden Systems builds beautiful, climate-controlled grow sheds for smart food production. Grow fresh produce all year round." name="description"/>
+  <meta content="hydroponic shed, smart garden, indoor farming, automated grow shed, food security, eco home" name="keywords"/>
+  <meta content="Neogarden Systems" name="author"/>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>
@@ -17,6 +20,15 @@
     button { padding: 1rem; background: #2980B9; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.3s ease; }
     button:hover { background: #1f6391; }
   </style>
+  <!-- Google Analytics -->
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX">
+  </script>
+  <script>
+   window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXX');
+  </script>
  </head>
  <body>
   <header>
@@ -41,6 +53,9 @@
   <main>
    <form action="https://formspree.io/f/xdkdodgw" method="POST">
     <input name="name" placeholder="Full Name" required="" type="text"/>
+    <label>
+     Phone Number:
+    </label>
     <input name="phone" placeholder="Your Phone Number" required="True" type="tel"/>
     <input name="email" placeholder="Email Address" required="" type="email"/>
     <input name="address" placeholder="Delivery Address" required="" type="text"/>
