@@ -64,14 +64,6 @@
                  ]
     },
     {
-        "file":  "Combined.wav",
-        "label":  "Combined",
-        "category":  "Talking",
-        "tags":  [
-
-                 ]
-    },
-    {
         "file":  "Credit.wav",
         "label":  "Credit",
         "category":  "Talking",
@@ -392,3 +384,4 @@
                  ]
     }
 ]
+
