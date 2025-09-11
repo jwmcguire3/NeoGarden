@@ -6,301 +6,238 @@
 <title>Spencer’s Playground</title>
 <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* Brand colors from the character */
   :root{
-    --bg:#f7e36a;           /* Spencer yellow */
-    --panel:#fffbe6;        /* soft card over yellow */
-    --text:#271d00;         /* deep brown for contrast */
-    --muted:#5b4c18;
+    --bg:#f7e36a;      /* Spencer yellow */
+    --panel:#fffbe6;   /* soft card */
+    --text:#271d00;    /* warm dark */
     --border:#e7d66b;
-    --accent:#6b2aa5;       /* Spencer purple */
-    --accent-2:#8b3ad6;     /* brighter purple for hover */
-    --chip:#f4edb0;
+    --accent:#6b2aa5;  /* Spencer purple */
+    --accent-2:#8b3ad6;
   }
-
   *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    color:var(--text);
-    background:var(--bg);
-  }
+  body{ margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); }
 
-  /* Header block with centered title + big image */
-  .top{
-    max-width:1100px;
-    margin:24px auto 8px;
-    padding:0 16px;
-    text-align:center;
-  }
-  .title{
-    font-family:"Berkshire Swash", serif;
-    font-size: clamp(28px, 6vw, 58px);
-    line-height:1.05;
-    color:var(--text);
-    letter-spacing:.3px;
-    text-shadow: 0 2px 0 rgba(255,255,255,.35);
-    margin: 8px 0 14px;
-  }
-  .hero-img{
-    display:block;
-    margin:0 auto 12px;
-    width:min(520px, 80vw);
-    height:auto;
-    border-radius:18px;
-    border:3px solid rgba(0,0,0,.06);
-    box-shadow: 0 10px 30px rgba(0,0,0,.15);
-    background:#fff;
-  }
+  /* Header */
+  .top{ max-width:1100px; margin:24px auto 8px; padding:0 16px; text-align:center; }
+  .title{ font-family:"Berkshire Swash", serif; font-size:clamp(28px,6vw,58px); line-height:1.05; margin:8px 0 14px; }
+  .hero-img{ display:block; margin:0 auto 12px; width:min(520px,80vw); height:auto; border-radius:18px; border:3px solid rgba(0,0,0,.06); box-shadow:0 10px 30px rgba(0,0,0,.15); background:#fff; }
 
-  /* Control bar */
-  header.controls{
-    position:sticky; top:0; z-index:5;
-    background:rgba(255, 251, 230, .9);
-    backdrop-filter: blur(8px);
-    border-top:1px solid var(--border);
-    border-bottom:1px solid var(--border);
-    padding:10px;
-    display:flex; gap:10px; align-items:center;
-  }
-  .search input{
-    padding:10px 12px;
-    border-radius:10px;
-    border:2px solid var(--border);
-    background:#fffdf4;
-    color:var(--text);
-    min-width:220px;
-  }
-  button{
-    border-radius:10px;
-    padding:10px 12px;
-    border:2px solid var(--accent);
-    background:var(--accent);
-    color:#fff;
-    cursor:pointer;
-    font-weight:600;
-  }
-  button:hover{ background:var(--accent-2); border-color:var(--accent-2); }
-  #favToggle{ background:#fffdf4; color:var(--accent); border-color:var(--accent); }
-  #favToggle.active{ background:var(--accent); color:#fff; }
-  .toolbar{ margin-left:auto; display:flex; gap:10px; }
+  /* Sections */
+  .wrap{ max-width:1100px; margin:8px auto 34px; padding:0 16px; }
+  .divider{ font-weight:800; letter-spacing:.3px; color:#3a2b60; margin:18px 0 8px; display:flex; align-items:center; gap:10px; }
+  .divider::after{ content:""; height:2px; flex:1; background:linear-gradient(90deg, var(--accent), transparent 60%); border-radius:2px; }
 
-  /* Cards/grid */
-  .grid{
-    max-width:1100px; margin:14px auto 34px; padding:0 16px;
-    display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
-  }
+  /* Grid & Cards */
+  .grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
   .card{
     background:var(--panel);
     border:2px solid var(--border);
     border-radius:14px;
     padding:12px;
     display:flex; flex-direction:column; gap:10px;
-    box-shadow: 0 2px 0 rgba(0,0,0,.03);
+    box-shadow:0 2px 0 rgba(0,0,0,.03);
+    cursor:pointer;
+    transition:transform .06s ease;
   }
+  .card:active{ transform:translateY(1px); }
   .card.playing{ box-shadow:0 0 0 2px var(--accent) inset; }
-  .title-sm{ font-weight:600; }
-  .row{ display:flex; gap:8px; flex-wrap:wrap; }
-
-  /* Toast */
-  .toast{
-    position:fixed; left:50%; transform:translateX(-50%);
-    bottom:18px; background:rgba(35,17,62,.9);
-    color:#fff; padding:10px 14px; border-radius:10px;
-    font-size:14px; opacity:0; pointer-events:none;
-    transition:opacity .18s, transform .18s;
+  .toprow{ display:flex; align-items:center; gap:10px; }
+  .label{ font-weight:700; line-height:1.2; }
+  .star{
+    margin-left:auto;
+    appearance:none;
+    border:2px solid var(--accent);
+    background:#fffdf4;
+    color:var(--accent);
+    font-weight:800;
+    border-radius:10px;
+    padding:6px 10px;
+    cursor:pointer;
   }
-  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+  .star.fav{ background:var(--accent); color:#fff; }
+  /* Drag ghost */
+  .sortable-ghost{ opacity:.5; }
 </style>
 </head>
 <body>
 
 <section class="top">
   <h1 class="title">Spencer’s Playground</h1>
-  <!-- Big centered image (no cropping) -->
-  <img class="hero-img" src="spencer.png" alt="Spencer character" loading="eager">
+  <img class="hero-img" src="spencer.png" alt="Spencer character">
 </section>
 
-<header class="controls">
-  <div class="search"><input id="q" placeholder="Search clips…"></div>
-  <button id="favToggle" aria-pressed="false" title="Toggle favorites view">☆ Show Favorites Only</button>
-  <div class="toolbar">
-    <button id="shuffle" title="Random (R)">Random</button>
-    <button id="stop" title="Stop (Space)">Stop</button>
-  </div>
-</header>
+<div class="wrap">
+  <div class="divider">Favorites</div>
+  <div id="favGrid" class="grid"></div>
 
-<div class="grid" id="grid"></div>
+  <div class="divider" style="margin-top:24px;">All Clips</div>
+  <div id="allGrid" class="grid"></div>
+</div>
 
-<div id="toast" class="toast" role="status" aria-live="polite">Copied to clipboard</div>
-
+<!-- SortableJS (touch-friendly drag & drop) -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
 const MANIFEST_URL = 'sounds.json';
-const ALLOW_OVERLAP = false;      // start a new clip -> stop any playing one
-const PRELOAD = 'metadata';
+const ALLOW_OVERLAP = false;
 
 const state = {
-  clips: [], filtered: [], playing:new Map(),
-  q:'', favOnly:false, favorites:new Set(), loop:new Set()
+  clips: [],             // {id,file,label}
+  favSet: new Set(),     // Set<string file>
+  favOrder: [],          // Array<string file> (manual order)
+  playing: null          // {audio, id}
 };
 
-const el = s => document.querySelector(s);
-const grid = el('#grid');
-const favBtn = el('#favToggle');
-const toastEl = el('#toast');
+const favGrid = document.getElementById('favGrid');
+const allGrid = document.getElementById('allGrid');
 
-function showToast(msg='Copied to clipboard'){
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 1200);
+function savePrefs(){
+  localStorage.setItem('favSet', JSON.stringify([...state.favSet]));
+  localStorage.setItem('favOrder', JSON.stringify(state.favOrder));
+}
+function loadPrefs(){
+  try{ state.favSet = new Set(JSON.parse(localStorage.getItem('favSet')||'[]')); }catch{}
+  try{ state.favOrder = JSON.parse(localStorage.getItem('favOrder')||'[]') || []; }catch{}
 }
 
-async function loadManifest(){
-  const res = await fetch(MANIFEST_URL, {cache:'no-store'});
-  if(!res.ok) throw new Error('sounds.json not found');
+async function init(){
+  loadPrefs();
+  const res = await fetch(MANIFEST_URL,{cache:'no-store'});
   const data = await res.json();
   state.clips = data.map((d,i)=>({
     id:i,
     file:d.file,
-    label:d.label||(d.file||'').replace(/\.[^/.]+$/,'').replace(/[_-]+/g,' ').trim(),
-    tags:d.tags||[]
+    label: d.label || (d.file||'').replace(/\.[^/.]+$/,'').replace(/[_-]+/g,' ').trim()
   }));
-  try{ state.favorites = new Set(JSON.parse(localStorage.getItem('favorites')||'[]')); }catch{}
-  applyFilter();
-  updateFavToggleUI();
-}
-function applyFilter(){
-  const term = (state.q||'').toLowerCase();
-  state.filtered = state.clips.filter(c=>{
-    if(state.favOnly && !state.favorites.has(c.file)) return false;
-    if(!term) return true;
-    return c.label.toLowerCase().includes(term) || c.file.toLowerCase().includes(term);
-  });
-  renderGrid();
-}
-function renderGrid(){
-  grid.innerHTML='';
-  state.filtered.forEach(c=>{
-    const card = document.createElement('div');
-    card.className='card'; card.dataset.id = c.id;
 
-    const t = document.createElement('div');
-    t.className='title-sm';
-    t.textContent = c.label;
+  // Ensure favOrder only contains existing files, and includes any newly-faved items at end
+  state.favOrder = state.favOrder.filter(f => state.clips.find(c => c.file === f));
+  for(const f of state.favSet){ if(!state.favOrder.includes(f)) state.favOrder.push(f); }
 
-    const row = document.createElement('div');
-    row.className='row';
+  render();
 
-    const play = btn('▶','Play', ()=>playClip(c,card));
-    const stop = btn('■','Stop', ()=>stopClip(c,card));
-    const loop = btn('🔁','Loop', ()=>{
-      if(state.loop.has(c.file)){ state.loop.delete(c.file); loop.classList.remove('on'); }
-      else { state.loop.add(c.file); loop.classList.add('on'); }
-    });
-    if(state.loop.has(c.file)) loop.classList.add('on');
-
-    const fav  = btn(state.favorites.has(c.file)?'★':'☆','Favorite',()=>{
-      if(state.favorites.has(c.file)) state.favorites.delete(c.file);
-      else state.favorites.add(c.file);
-      localStorage.setItem('favorites', JSON.stringify([...state.favorites]));
-      fav.textContent = state.favorites.has(c.file)?'★':'☆';
-      if(state.favOnly) applyFilter();
-      updateFavToggleUI();
-    });
-
-    const share = btn('🔗','Copy link',()=>{
-      const url=new URL(window.location.href);
-      url.searchParams.set('clip', c.file);
-      navigator.clipboard.writeText(url.toString())
-        .then(()=> showToast('Copied to clipboard'))
-        .catch(()=> showToast('Copy failed'));
-    });
-
-    row.append(play,stop,loop,fav,share);
-    card.append(t,row);
-    grid.appendChild(card);
+  // Enable drag & drop inside favorites only
+  Sortable.create(favGrid, {
+    animation: 120,
+    ghostClass: 'sortable-ghost',
+    handle: '.card',      // whole card draggable
+    onSort: () => {
+      // Read current DOM order into favOrder
+      const newOrder = [...favGrid.querySelectorAll('.card')].map(el => el.dataset.file);
+      state.favOrder = newOrder;
+      savePrefs();
+    }
   });
 }
-function btn(text,title,onclick){
-  const b=document.createElement('button');
-  b.textContent=text; b.title=title; b.onclick=onclick;
-  return b;
+
+function render(){
+  // Partition clips
+  const favFiles = new Set(state.favOrder);
+  const favs = state.favOrder
+    .map(file => state.clips.find(c => c.file===file))
+    .filter(Boolean);
+
+  const nonFavs = state.clips
+    .filter(c => !state.favSet.has(c.file))
+    .sort((a,b) => a.label.localeCompare(b.label));
+
+  // Build DOM
+  favGrid.innerHTML = '';
+  favs.forEach(c => favGrid.appendChild(cardEl(c, true)));
+  allGrid.innerHTML = '';
+  nonFavs.forEach(c => allGrid.appendChild(cardEl(c, false)));
 }
 
-function playClip(c,card){
-  // stop all others first (no overlap)
-  stopAll();
-  // stop this clip’s prior instance if any
-  stopClip(c,card);
+function cardEl(c, isFav){
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.id = c.id;
+  card.dataset.file = c.file;
 
+  const top = document.createElement('div');
+  top.className = 'toprow';
+
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = c.label;
+
+  const star = document.createElement('button');
+  star.className = 'star' + (isFav ? ' fav' : '');
+  star.textContent = isFav ? '★' : '☆';
+  star.title = isFav ? 'Remove favorite' : 'Add to favorites';
+  star.addEventListener('click', (e)=>{
+    e.stopPropagation(); // don’t play
+    toggleFavorite(c.file);
+  });
+
+  top.append(label, star);
+  card.append(top);
+
+  // Play on card click
+  card.addEventListener('click', ()=> playClip(c, card));
+
+  return card;
+}
+
+function toggleFavorite(file){
+  const wasFav = state.favSet.has(file);
+  if(wasFav){
+    // remove
+    state.favSet.delete(file);
+    state.favOrder = state.favOrder.filter(f => f !== file);
+  }else{
+    // add: most-recently-starred goes to TOP
+    state.favSet.add(file);
+    state.favOrder = [file, ...state.favOrder.filter(f => f !== file)];
+  }
+  savePrefs();
+  render();
+}
+
+function playClip(c, card){
+  if(ALLOW_OVERLAP === false) stopAll();
+  // stop if same is playing
+  if(state.playing && state.playing.id === c.id){
+    stopAll();
+    return;
+  }
   const a = new Audio(c.file);
-  a.preload = PRELOAD;
-  a.loop = state.loop.has(c.file);
-  a.onended = ()=>{ state.playing.delete(c.id); card?.classList.remove('playing'); };
-  a.onplay  = ()=> card?.classList.add('playing');
-  a.onpause = ()=> card?.classList.remove('playing');
-  state.playing.set(c.id, a);
+  a.onended = stopAll;
+  a.onplay  = ()=> card.classList.add('playing');
+  a.onpause = ()=> card.classList.remove('playing');
+  state.playing = { audio:a, id:c.id, card };
   a.play().catch(()=>{});
 }
-function stopClip(c,card){
-  const a = state.playing.get(c.id);
-  if(a){ a.pause(); a.currentTime=0; state.playing.delete(c.id); }
-  card?.classList.remove('playing');
-}
+
 function stopAll(){
-  for(const [id,a] of state.playing.entries()){ a.pause(); a.currentTime=0; }
-  state.playing.clear();
-  document.querySelectorAll('.card.playing').forEach(e=>e.classList.remove('playing'));
-}
-function shuffleOne(){
-  if(!state.filtered.length) return;
-  const c = state.filtered[Math.floor(Math.random()*state.filtered.length)];
-  const card = document.querySelector(`.card[data-id="${c.id}"]`);
-  playClip(c,card);
+  if(state.playing){
+    try{ state.playing.audio.pause(); }catch{}
+    try{ state.playing.audio.currentTime = 0; }catch{}
+    state.playing.card?.classList.remove('playing');
+    state.playing = null;
+  }
 }
 
-function updateFavToggleUI(){
-  const on = state.favOnly;
-  favBtn.classList.toggle('active', on);
-  favBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  favBtn.textContent = on ? '★ Showing Favorites' : '☆ Show Favorites Only';
-}
-
-document.addEventListener('keydown',e=>{
+// Keyboard: 1–9 quick play from favorites first, then others
+document.addEventListener('keydown', (e)=>{
   if(e.target.matches('input,textarea')) return;
-  if(e.code==='Space'){ e.preventDefault(); stopAll(); }
-  if(e.key.toLowerCase()==='r'){ e.preventDefault(); shuffleOne(); }
-  const n=parseInt(e.key,10);
-  if(n>=1&&n<=9){
-    const c=state.filtered[n-1];
-    if(c){
-      const card=document.querySelector(`.card[data-id="${c.id}"]`);
-      playClip(c,card);
+  const n = parseInt(e.key,10);
+  if(n>=1 && n<=9){
+    const favCards = [...favGrid.querySelectorAll('.card')];
+    const allCards = [...allGrid.querySelectorAll('.card')];
+    const list = [...favCards, ...allCards];
+    const target = list[n-1];
+    if(target){
+      const id = Number(target.dataset.id);
+      const c = state.clips.find(x => x.id === id);
+      if(c) playClip(c, target);
     }
   }
 });
 
-document.querySelector('#q').oninput = e => { state.q = e.target.value; applyFilter(); };
-document.querySelector('#stop').onclick = stopAll;
-document.querySelector('#shuffle').onclick = shuffleOne;
-favBtn.onclick = () => { state.favOnly = !state.favOnly; updateFavToggleUI(); applyFilter(); };
-
-// Auto-play via ?clip=
-const params = new URLSearchParams(location.search);
-function tryAutoplayParam(){
-  const clip = params.get('clip'); if(!clip) return;
-  const c = state.clips.find(x=>x.file===clip); if(!c) return;
-  const card = grid.querySelector(`.card[data-id="${c.id}"]`);
-  if(card) playClip(c,card);
-}
-
-loadManifest()
-  .then(()=> setTimeout(tryAutoplayParam, 300))
-  .catch(err=>{
-    grid.innerHTML = '<div style="opacity:.8;padding:16px">Could not load sounds.json.</div>';
-    console.error(err);
-  });
+init().catch(err=>{
+  allGrid.innerHTML = '<div style="opacity:.8">Could not load sounds.json.</div>';
+  console.error(err);
+});
 </script>
 </body>
 </html>
