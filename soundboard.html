@@ -5,238 +5,201 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Spencer Soundboard</title>
 <style>
-  :root { --bg:#0b0c10; --panel:#121318; --accent:#7dd3fc; --muted:#9aa0a6; --text:#e8eaed; --chip:#1f2330; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color:var(--text); background:linear-gradient(180deg, #0b0c10, #121318); }
-  header { position:sticky; top:0; z-index:5; backdrop-filter:saturate(180%) blur(6px); background:rgba(11,12,16,.85); border-bottom:1px solid #1f2330; }
-  .bar { max-width:1100px; margin:0 auto; padding:10px 16px; display:grid; gap:10px; grid-template-columns: 1fr 140px 120px 90px; align-items:center; }
-  .bar > * { min-width:0; }
-  .search { display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid #222634; padding:8px 10px; border-radius:12px; }
-  .search input { flex:1; background:transparent; border:0; outline:0; color:var(--text); font-size:14px; }
-  select, button, .btn { background:var(--panel); color:var(--text); border:1px solid #222634; border-radius:12px; padding:8px 10px; font-size:14px; }
-  button:hover, .btn:hover, select:hover { border-color:#2d3347; }
-  .grid { max-width:1100px; margin:18px auto; padding:0 16px 32px; display:grid; gap:12px; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
-  .card { background:var(--panel); border:1px solid #1e2230; border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px; transition:transform .05s ease; }
-  .card.playing { border-color:var(--accent); box-shadow:0 0 0 1px rgba(125,211,252,.25) inset; transform:translateY(-1px); }
-  .title { font-weight:600; line-height:1.2; font-size:14px; color:#eaf2ff; min-height:2.4em; }
-  .meta { color:var(--muted); font-size:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chip { background:var(--chip); color:#cfd3dc; font-size:11px; padding:4px 6px; border-radius:999px; border:1px solid #2a3042; }
-  .row { display:flex; gap:8px; align-items:center; }
-  .row .grow { flex:1; }
-  .k { font-size:11px; color:#9fb3c8; border:1px solid #2a3042; padding:2px 6px; border-radius:6px; }
-  .foot { max-width:1100px; margin:0 auto 24px; padding:0 16px; color:#8b92a0; font-size:12px; }
-  .vol { width:100%; }
-  @media (max-width:780px) { .bar { grid-template-columns: 1fr 1fr; } .bar .hide-sm { display:none; } }
+  :root { --bg:#0b0c10; --panel:#121318; --accent:#7dd3fc; --muted:#9aa0a6; --text:#e8eaed; --chip:#1f2330; --border:#1e2230; }
+  body.light { --bg:#fafafa; --panel:#ffffff; --accent:#2563eb; --muted:#555; --text:#111; --chip:#e5e7eb; --border:#d8dae0; }
+  * { box-sizing:border-box }
+  body { margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color:var(--text); background:var(--bg); transition: background .2s, color .2s; }
+  header { position:sticky; top:0; z-index:5; background:var(--panel); border-bottom:1px solid var(--border); padding:10px; display:flex; gap:10px; align-items:center; }
+  input,button { font-size:14px; }
+  .search input { padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text); }
+  button { background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:8px 10px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  .toolbar { margin-left:auto; display:flex; gap:8px; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); padding:16px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:10px; }
+  .card.playing { border-color:var(--accent); }
+  .row { display:flex; gap:6px; flex-wrap:wrap; }
+  .title { font-weight:600; line-height:1.2 }
+  /* Toast */
+  .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111a; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; backdrop-filter: blur(6px); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(-4px); }
+  /* Fav toggle visual */
+  #favToggle.active { border-color:var(--accent); box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent) inset; }
 </style>
 </head>
 <body>
 <header>
-  <div class="bar">
-    <div class="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#9aa0a6"><path d="M21 21l-4.3-4.3m1.3-4.2A7.8 7.8 0 1 1 9.2 4.7a7.8 7.8 0 0 1 8.8 7.8z" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-      <input id="q" placeholder="Search clips… (label, tag)" autocomplete="off">
-    </div>
-    <select id="cat">
-      <option value="All">All categories</option>
-    </select>
-    <button id="shuffle" title="Random clip (R)">Shuffle</button>
-    <button id="stop" class="hide-sm" title="Stop all (Space)">Stop</button>
+  <div class="search"><input id="q" placeholder="Search clips…"></div>
+  <!-- Favorites toggle that changes when toggled -->
+  <button id="favToggle" aria-pressed="false" title="Toggle favorites view">☆ Show Favorites Only</button>
+  <div class="toolbar">
+    <button id="shuffle" title="Random (R)">Random</button>
+    <button id="stop" title="Stop (Space)">Stop</button>
+    <button id="theme" title="Dark/Light">🌙/☀️</button>
   </div>
 </header>
 
 <div class="grid" id="grid"></div>
 
-<div class="foot">
-  <div class="row" style="gap:14px">
-    <div class="grow">Hotkeys: <span class="k">R</span> random, <span class="k">Space</span> stop all, <span class="k">1–9</span> trigger first 9 visible clips.</div>
-    <div style="width:240px; display:flex; gap:8px; align-items:center;">
-      <span style="font-size:12px;color:#9aa0a6;">Volume</span>
-      <input id="vol" class="vol" type="range" min="0" max="1" step="0.01" value="1">
-    </div>
-  </div>
-</div>
+<!-- Toast -->
+<div id="toast" class="toast" role="status" aria-live="polite">Copied to clipboard</div>
 
 <script>
-/** CONFIG **/
-const MANIFEST_URL = 'sounds.json';        // same folder as this HTML
-const ALLOW_OVERLAP = true;                // allow multiple clips at once
-const PRELOAD = 'metadata';                // 'none' | 'metadata' | 'auto'
-const DEFAULT_CATEGORY = 'All';
-
-/**
- * Expected sounds.json format:
- * [
- *   {"file":"spencer_hi.wav","label":"Hi!","category":"Talking","tags":["greeting"]},
- *   {"file":"spencer_sing1.wav","label":"La-la","category":"Singing","tags":["vocalise"]},
- *   ...
- * ]
- */
+const MANIFEST_URL = 'sounds.json';
+const ALLOW_OVERLAP = true;
+const PRELOAD = 'metadata';
 
 const state = {
-  clips: [],
-  filtered: [],
-  playing: new Map(),
-  vol: 1,
-  q: '',
-  cat: DEFAULT_CATEGORY
+  clips: [], filtered: [], playing:new Map(),
+  vol:1, q:'', favOnly:false, favorites:new Set(),
+  loop:new Set(), theme:localStorage.getItem('theme')||'dark'
 };
 
-const el = sel => document.querySelector(sel);
+document.body.classList.toggle('light', state.theme==='light');
+
+const el = s => document.querySelector(s);
 const grid = el('#grid');
-const q = el('#q');
-const cat = el('#cat');
-const stopBtn = el('#stop');
-const vol = el('#vol');
-const shuffleBtn = el('#shuffle');
+const favBtn = el('#favToggle');
+const toastEl = el('#toast');
 
-async function loadManifest() {
-  const res = await fetch(MANIFEST_URL, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to load sounds.json');
-  const data = await res.json();
-  // normalize
-  state.clips = data.map((d, i) => ({
-    id: i,
-    file: d.file,
-    label: d.label || (d.file || '').replace(/\.[^/.]+$/, '').replace(/[_-]+/g,' ').trim(),
-    category: d.category || 'Uncategorized',
-    tags: Array.isArray(d.tags) ? d.tags : [],
+function showToast(msg='Copied to clipboard') {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> toastEl.classList.remove('show'), 1200);
+}
+
+async function loadManifest(){
+  const res=await fetch(MANIFEST_URL,{cache:'no-store'});
+  if(!res.ok) throw new Error('sounds.json not found');
+  const data=await res.json();
+  state.clips=data.map((d,i)=>({
+    id:i, file:d.file,
+    label:d.label||(d.file||'').replace(/\.[^/.]+$/,'').replace(/[_-]+/g,' ').trim(),
+    tags:d.tags||[]
   }));
-  buildCategoryList();
+  try { state.favorites=new Set(JSON.parse(localStorage.getItem('favorites')||'[]')); }catch{}
   applyFilter();
+  updateFavToggleUI();
 }
-
-function buildCategoryList() {
-  const cats = new Set([DEFAULT_CATEGORY]);
-  state.clips.forEach(c => cats.add(c.category));
-  cat.innerHTML = '';
-  [...cats].forEach(cname => {
-    const opt = document.createElement('option');
-    opt.value = cname; opt.textContent = cname;
-    cat.appendChild(opt);
-  });
-  cat.value = state.cat;
-}
-
-function applyFilter() {
-  const term = (state.q || '').toLowerCase();
-  const chosen = state.cat || DEFAULT_CATEGORY;
-  state.filtered = state.clips.filter(c => {
-    const inCat = chosen === DEFAULT_CATEGORY || c.category === chosen;
-    if (!inCat) return false;
-    if (!term) return true;
-    return (c.label.toLowerCase().includes(term) ||
-            c.tags.join(' ').toLowerCase().includes(term) ||
-            c.file.toLowerCase().includes(term));
+function applyFilter(){
+  const term=(state.q||'').toLowerCase();
+  state.filtered=state.clips.filter(c=>{
+    if(state.favOnly && !state.favorites.has(c.file)) return false;
+    if(!term) return true;
+    return c.label.toLowerCase().includes(term) || c.file.toLowerCase().includes(term);
   });
   renderGrid();
 }
+function renderGrid(){
+  grid.innerHTML='';
+  state.filtered.forEach((c)=>{
+    const card=document.createElement('div');
+    card.className='card'; card.dataset.id=c.id;
 
-function renderGrid() {
-  grid.innerHTML = '';
-  state.filtered.forEach((c, idx) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.id = c.id;
+    const title=document.createElement('div');
+    title.className='title'; title.textContent=c.label;
 
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = c.label;
+    const row=document.createElement('div'); row.className='row';
+    const play=btn('▶','Play',()=>playClip(c,card));
+    const stop=btn('■','Stop',()=>stopClip(c,card));
+    const loop=btn('🔁','Loop',()=>{
+      if(state.loop.has(c.file)){ state.loop.delete(c.file); loop.style.opacity=0.5; }
+      else { state.loop.add(c.file); loop.style.opacity=1; }
+    });
+    loop.style.opacity = state.loop.has(c.file) ? 1 : 0.5;
 
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-    meta.innerHTML = `<span>${c.category}</span><span class="k">${idx < 9 ? idx+1 : ''}</span>`;
-
-    const chips = document.createElement('div');
-    chips.className = 'chips';
-    (c.tags || []).slice(0,3).forEach(t => {
-      const chip = document.createElement('span');
-      chip.className = 'chip';
-      chip.textContent = t;
-      chips.appendChild(chip);
+    const fav=btn( state.favorites.has(c.file) ? '★' : '☆', 'Favorite',()=>{
+      if(state.favorites.has(c.file)) state.favorites.delete(c.file);
+      else state.favorites.add(c.file);
+      localStorage.setItem('favorites', JSON.stringify([...state.favorites]));
+      fav.textContent = state.favorites.has(c.file) ? '★' : '☆';
+      if(state.favOnly) applyFilter(); // refresh view when fav-only
+      updateFavToggleUI();
     });
 
-    const row = document.createElement('div');
-    row.className = 'row';
-    const play = document.createElement('button');
-    play.textContent = 'Play';
-    play.addEventListener('click', () => playClip(c, card));
-    const stop = document.createElement('button');
-    stop.textContent = 'Stop';
-    stop.addEventListener('click', () => stopClip(c, card));
-    row.append(play, stop);
+    const share=btn('🔗','Copy link',()=>{
+      const url=new URL(window.location.href);
+      url.searchParams.set('clip', c.file);
+      navigator.clipboard.writeText(url.toString()).then(()=>{
+        showToast('Copied to clipboard');
+      }).catch(()=> showToast('Copy failed'));
+    });
 
-    card.append(title, meta, chips, row);
+    row.append(play,stop,loop,fav,share);
+    card.append(title,row);
     grid.appendChild(card);
   });
 }
-
-function playClip(c, cardEl) {
-  if (!ALLOW_OVERLAP) stopAll();
-  // stop existing same-clip first
-  stopClip(c, cardEl);
-
-  const a = new Audio(c.file);
-  a.preload = PRELOAD;
-  a.volume = state.vol;
-  a.addEventListener('ended', () => {
-    state.playing.delete(c.id);
-    cardEl?.classList.remove('playing');
-  });
-  a.addEventListener('play', () => cardEl?.classList.add('playing'));
-  a.addEventListener('pause', () => cardEl?.classList.remove('playing'));
-  state.playing.set(c.id, a);
-  a.play().catch(()=>{ /* autoplay restrictions on first click */ });
+function btn(text,title,onclick){
+  const b=document.createElement('button'); b.textContent=text; b.title=title; b.onclick=onclick; return b;
 }
 
-function stopClip(c, cardEl) {
-  const a = state.playing.get(c.id);
-  if (a) { a.pause(); a.currentTime = 0; state.playing.delete(c.id); }
-  cardEl?.classList.remove('playing');
+function playClip(c,card){
+  if(!ALLOW_OVERLAP) stopAll();
+  stopClip(c,card);
+  const a=new Audio(c.file);
+  a.preload=PRELOAD; a.volume=state.vol; a.loop=state.loop.has(c.file);
+  a.onended=()=>{ state.playing.delete(c.id); card.classList.remove('playing'); };
+  a.onplay =()=> card.classList.add('playing');
+  a.onpause=()=> card.classList.remove('playing');
+  state.playing.set(c.id,a); a.play().catch(()=>{});
 }
-
-function stopAll() {
-  for (const [id, a] of state.playing.entries()) {
-    a.pause(); a.currentTime = 0;
-  }
+function stopClip(c,card){
+  const a=state.playing.get(c.id);
+  if(a){ a.pause(); a.currentTime=0; state.playing.delete(c.id); }
+  card?.classList.remove('playing');
+}
+function stopAll(){
+  for(const [id,a] of state.playing.entries()){ a.pause(); a.currentTime=0; }
   state.playing.clear();
-  document.querySelectorAll('.card.playing').forEach(el=>el.classList.remove('playing'));
+  document.querySelectorAll('.card.playing').forEach(e=>e.classList.remove('playing'));
+}
+function shuffleOne(){
+  if(!state.filtered.length) return;
+  const c = state.filtered[Math.floor(Math.random()*state.filtered.length)];
+  const card=document.querySelector(`.card[data-id="${c.id}"]`);
+  playClip(c,card);
 }
 
-function shuffleOne() {
-  if (!state.filtered.length) return;
-  const idx = Math.floor(Math.random() * state.filtered.length);
-  const c = state.filtered[idx];
-  const cardEl = document.querySelector(`.card[data-id="${c.id}"]`);
-  playClip(c, cardEl);
+function updateFavToggleUI(){
+  const on = state.favOnly;
+  favBtn.classList.toggle('active', on);
+  favBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  favBtn.textContent = on ? '★ Showing Favorites' : '☆ Show Favorites Only';
 }
 
-q.addEventListener('input', (e)=>{ state.q = e.target.value; applyFilter(); });
-cat.addEventListener('change', (e)=>{ state.cat = e.target.value; applyFilter(); });
-vol.addEventListener('input', (e)=> {
-  state.vol = parseFloat(e.target.value || '1') || 1;
-  // live-update volumes of currently playing
-  for (const a of state.playing.values()) a.volume = state.vol;
-});
-stopBtn.addEventListener('click', stopAll);
-shuffleBtn.addEventListener('click', shuffleOne);
-
-document.addEventListener('keydown', (e)=>{
-  if (e.target.matches('input, textarea')) return;
-  if (e.code === 'Space') { e.preventDefault(); stopAll(); }
-  if (e.key.toLowerCase() === 'r') { e.preventDefault(); shuffleOne(); }
-  const n = parseInt(e.key, 10);
-  if (n >= 1 && n <= 9) {
-    const c = state.filtered[n-1];
-    if (c) {
-      const cardEl = document.querySelector(`.card[data-id="${c.id}"]`);
-      playClip(c, cardEl);
-    }
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea')) return;
+  if(e.code==='Space'){ e.preventDefault(); stopAll(); }
+  if(e.key.toLowerCase()==='r'){ e.preventDefault(); shuffleOne(); }
+  const n=parseInt(e.key,10);
+  if(n>=1&&n<=9){
+    const c=state.filtered[n-1];
+    if(c){ const card=document.querySelector(`.card[data-id="${c.id}"]`); playClip(c,card); }
   }
 });
 
-loadManifest().catch(err => {
-  grid.innerHTML = '<div style="opacity:.8">Could not load sounds.json. Make sure it is present and allowed by your host.</div>';
+el('#q').oninput = e => { state.q = e.target.value; applyFilter(); };
+el('#stop').onclick = stopAll;
+el('#shuffle').onclick = shuffleOne;
+favBtn.onclick = () => { state.favOnly = !state.favOnly; updateFavToggleUI(); applyFilter(); };
+el('#theme').onclick = () => {
+  state.theme = state.theme==='dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', state.theme);
+  document.body.classList.toggle('light', state.theme==='light');
+};
+
+// Auto-play via ?clip= param
+const params = new URLSearchParams(location.search);
+function tryAutoplayParam(){
+  const clip=params.get('clip'); if(!clip) return;
+  const c=state.clips.find(x=>x.file===clip); if(!c) return;
+  const card=grid.querySelector(`.card[data-id="${c.id}"]`);
+  if(card) playClip(c,card);
+}
+loadManifest().then(()=> setTimeout(tryAutoplayParam, 300)).catch(err=>{
+  grid.innerHTML = '<div style="opacity:.8;padding:16px">Could not load sounds.json.</div>';
   console.error(err);
 });
 </script>
