@@ -1,5 +1,34 @@
-﻿[
+[
     {
+        "file":  "I Wonder.wav",
+        "label":  "I Wonder",
+        "category":  "Talking",
+        "tags":  [
+
+                 ]
+    },
+    {
+        "file":  "I Love You Jessica.wav",
+        "label":  "I Love You Jessica",
+        "category":  "Talking",
+        "tags":  [
+
+                 ]
+    },{
+        "file":  "I Love You.wav",
+        "label":  "I Love You",
+        "category":  "Talking",
+        "tags":  [
+
+                 ]
+    },{
+        "file":  "Oh Baby You.wav",
+        "label":  "Oh Baby You",
+        "category":  "Talking",
+        "tags":  [
+
+                 ]
+    },{
         "file":  "About To Spank Me.wav",
         "label":  "About To Spank Me",
         "category":  "Talking",
@@ -7,7 +36,7 @@
 
                  ]
     },
-    {
+	{
         "file":  "Bank.wav",
         "label":  "Bank",
         "category":  "Talking",
@@ -58,6 +87,14 @@
     {
         "file":  "Can I Ask A Question.wav",
         "label":  "Can I Ask A Question",
+        "category":  "Talking",
+        "tags":  [
+
+                 ]
+    },
+    {
+        "file":  "Combined.wav",
+        "label":  "Combined",
         "category":  "Talking",
         "tags":  [
 
@@ -384,4 +421,3 @@
                  ]
     }
 ]
-
